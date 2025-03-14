@@ -44,7 +44,7 @@ type UseFirebase = () => {
   handleLogout: () => Promise<void>;
   passwordConf: string;
   setPasswordConf: React.Dispatch<React.SetStateAction<string>>;
-  handleSignup: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
+  handleSignup: (e: React.FormEvent) => Promise<void>;
   currentPassword: string;
   setCurrentPassword: React.Dispatch<React.SetStateAction<string>>;
   handleUpdatePassword: (e: React.FormEvent) => Promise<void>;
@@ -100,7 +100,15 @@ export const useFirebase: UseFirebase = () => {
       if (user) {
         setEmail(user.email as string);
       } else {
-        navigate("/login"); //userがセッション中でなければ/loginに移動
+        // 認証が不要なページのパスリスト
+        const authNotRequiredPaths = ["/login", "/register", "/sendReset"];
+        // 現在のパスを取得
+        const currentPath = window.location.pathname;
+
+        // 現在のパスが認証不要なページでない場合のみリダイレクト
+        if (!authNotRequiredPaths.includes(currentPath)) {
+          navigate("/login"); //userがセッション中でなければ/loginに移動
+        }
       }
     });
     return () => {
